@@ -198,11 +198,21 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+        if(isEmpty())
+        	return true;
+        else if(size()==1)
+        	return true;
+        else {
+        	if(!(arcs.get(0).getOrigin().equals(this.origin)))
+        		return false;
+        	for(int i=0; i<arcs.size() -1;i++) {
+        		if(!(arcs.get(i).getDestination().equals(arcs.get(i+1).getOrigin())))
+        			return false;
+        	}
+        return true;
+        }
     }
 
     /**
@@ -210,11 +220,13 @@ public class Path {
      * 
      * @return Total length of the path (in meters).
      * 
-     * @deprecated Need to be implemented.
      */
     public float getLength() {
-        // TODO:
-        return 0;
+        float size=0;
+        for(Arc arc : arcs) {
+        	size+= arc.getLength();
+        }
+        return size;
     }
 
     /**
@@ -225,11 +237,9 @@ public class Path {
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
      * 
-     * @deprecated Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+        return ((getLength()/1000)/speed)*3600;
     }
 
     /**
@@ -238,11 +248,13 @@ public class Path {
      * 
      * @return Minimum travel time to travel this path (in seconds).
      * 
-     * @deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+        float time=0;
+        for(Arc arc : arcs) {
+        	time+= arc.getMinimumTravelTime();
+        }
+        return time;
     }
 
 }
