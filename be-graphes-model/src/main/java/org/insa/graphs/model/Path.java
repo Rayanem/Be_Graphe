@@ -30,11 +30,38 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
+        boolean find;
+        if(nodes.size() == 1) {
+        	return new Path(graph,nodes.get(0));
+        }
+        else {
+        	int id;
+        	Node neu;
+        	Arc arkFast,ark;
+        	for(int i = 0; i<nodes.size() -1; i++) {
+        		find = false;
+        		id = nodes.get(i).getId();
+        		neu = graph.getNodes().get(id);
+        		arkFast = neu.getSuccessors().get(0);
+        		for(int j = 0; j < neu.getNumberOfSuccessors();j++) {
+        			ark = neu.getSuccessors().get(j);
+        			if(ark.getDestination().equals(nodes.get(i+1))) {
+        				find = true;
+        				if(ark.getMinimumTravelTime() < arkFast.getMinimumTravelTime())
+        					arkFast = ark;
+        			}
+        				
+        		}
+        		if(!find)
+        			throw new IllegalArgumentException();
+        		else
+        			arcs.add(i,arkFast);
+        	}
+        }
         // TODO:
         return new Path(graph, arcs);
     }
@@ -50,12 +77,38 @@ public class Path {
      * 
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
-     * 
-     * @deprecated Need to be implemented.
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
+        boolean find;
+        if(nodes.size() == 1) {
+        	return new Path(graph,nodes.get(0));
+        }
+        else {
+        	int id;
+        	Node neu;
+        	Arc arkCourt,ark;
+        	for(int i = 0; i<nodes.size() -1; i++) {
+        		find = false;
+        		id = nodes.get(i).getId();
+        		neu = graph.getNodes().get(id);
+        		arkCourt = neu.getSuccessors().get(0);
+        		for(int j = 0; j < neu.getNumberOfSuccessors();j++) {
+        			ark = neu.getSuccessors().get(j);
+        			if(ark.getDestination().equals(nodes.get(i+1))) {
+        				find = true;
+        				if(ark.getLength() < arkCourt.getLength())
+        					arkCourt = ark;
+        			}
+        				
+        		}
+        		if(!find)
+        			throw new IllegalArgumentException();
+        		else
+        			arcs.add(i,arkCourt);
+        	}
+        }
         // TODO:
         return new Path(graph, arcs);
     }
