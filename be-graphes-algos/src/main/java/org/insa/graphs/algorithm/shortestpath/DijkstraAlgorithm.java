@@ -14,6 +14,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
     }
+    
+    protected Label createLabel(int sommet) {
+    	return new Label(sommet,false,Float.MAX_VALUE,null);
+    }
 
     @Override
     protected ShortestPathSolution doRun() {
@@ -23,8 +27,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Graph graph = data.getGraph();
         Label[] labs = new Label[graph.size()];
         
-        Arc ark;
-        Label lb;
+        Label lb = null;
         Node nod; 
         Path path;
         
@@ -32,22 +35,30 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         BinaryHeap<Label> bh = new BinaryHeap<Label>();
         
         for(int i=0;i<listNode.size();i++) {
-        	lb = new Label(graph.get(i).getId(),false,Float.MAX_VALUE,null);
+        	lb = createLabel(graph.get(i).getId());
         	labs[graph.get(i).getId()]=lb;
         }
+        notifyOriginProcessed(data.getOrigin());
         
         labs[data.getOrigin().getId()].setCout(0);
         bh.insert(labs[data.getOrigin().getId()]);
+        System.out.println((lb.getCost()));
         
         while(!bh.isEmpty() && !done) {
         	lb = bh.deleteMin();
         	lb.setMarque(true);
+        	if(!bh.isValid())
+        		System.out.println("Erreur");
         	
         	if(data.getDestination().getId() == lb.getSommet())
         		done = true;
-        	
+        	//System.out.println("nb successeurs : " + graph.get(lb.getSommet()).getNumberOfSuccessors()+"\n");
         	for (Arc arc : graph.get(lb.getSommet()).getSuccessors()) {
-				
+        		if (!data.isAllowed(arc)) {
+                    continue;
+                }
+        		//System.out.println("Successeurs visités\n");
+				notifyNodeReached(arc.getDestination());
 				Label lb2 = labs[arc.getDestination().getId()];
 				if (!lb2.isMarque()) {
 					if (lb2.getCost() > lb.getCost() + arc.getLength()) {
@@ -57,7 +68,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 						} catch (ElementNotFoundException e) {
 							
 						}
-						
 						lb2.setCout(lb.getCost() + arc.getLength());
 						lb2.setPere(arc);					
 						bh.insert(lb2);
@@ -70,6 +80,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         LinkedList<Arc> arks = new LinkedList<Arc>();
         nod = data.getDestination();
         if (labs[nod.getId()].getCost() != Float.MAX_VALUE ) {
+        	notifyDestinationReached(data.getDestination());
 			while (!(nod.equals(data.getOrigin()))) {
 				arks.add(labs[nod.getId()].getPere());
 				nod = labs[nod.getId()].getPere().getOrigin();
@@ -77,6 +88,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			
 			Collections.reverse(arks);
 			path = new Path(graph, arks);
+			System.out.println(path.isValid());
+			if (Math.round(labs[data.getDestination().getId()].getCost()) == Math.round(path.getLength())) {
+				  System.out.println("Route --> OK");
+				}
 			solution = new ShortestPathSolution(data, AbstractSolution.Status.OPTIMAL, path);
 		} 
         else

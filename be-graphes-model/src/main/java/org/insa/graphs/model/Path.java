@@ -46,13 +46,16 @@ public class Path {
         		find = false;
         		id = nodes.get(i).getId();
         		neu = graph.getNodes().get(id);
-        		arkFast = neu.getSuccessors().get(0);
+        		arkFast = null;
+        		double min = -1;
         		for(int j = 0; j < neu.getNumberOfSuccessors();j++) {
         			ark = neu.getSuccessors().get(j);
         			if(ark.getDestination().equals(nodes.get(i+1))) {
         				find = true;
-        				if(ark.getMinimumTravelTime() < arkFast.getMinimumTravelTime())
+        				if(ark.getMinimumTravelTime() < min || min == -1) {
         					arkFast = ark;
+        					min = ark.getMinimumTravelTime();
+        				}
         			}
         				
         		}
@@ -62,7 +65,7 @@ public class Path {
         			arcs.add(i,arkFast);
         	}
         }
-        // TODO:
+
         return new Path(graph, arcs);
     }
 
@@ -93,13 +96,16 @@ public class Path {
         		find = false;
         		id = nodes.get(i).getId();
         		neu = graph.getNodes().get(id);
-        		arkCourt = neu.getSuccessors().get(0);
+        		arkCourt = null;
+        		float min = -1;
         		for(int j = 0; j < neu.getNumberOfSuccessors();j++) {
         			ark = neu.getSuccessors().get(j);
         			if(ark.getDestination().equals(nodes.get(i+1))) {
         				find = true;
-        				if(ark.getLength() < arkCourt.getLength())
+        				if(ark.getLength() < min || min==-1) {
         					arkCourt = ark;
+        					min = ark.getLength();
+        				}
         			}
         				
         		}
