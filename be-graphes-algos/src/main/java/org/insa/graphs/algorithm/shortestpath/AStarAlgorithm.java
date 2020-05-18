@@ -1,5 +1,6 @@
 package org.insa.graphs.algorithm.shortestpath;
 
+import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.model.Label;
 import org.insa.graphs.model.LabelStar;
 import org.insa.graphs.model.Point;
@@ -11,10 +12,16 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     }
     
     @Override
-    protected Label createLabel(int sommet) {
+    protected Label createLabel(int sommet, float cout) {
         final ShortestPathData data = getInputData();
-        double dist = Point.distance(data.getGraph().get(sommet).getPoint(),data.getDestination().getPoint());
-        return new LabelStar(sommet,false,Float.MAX_VALUE,null,dist);
+        double cost;
+        if(getInputData().getMode() == AbstractInputData.Mode.LENGTH) {
+        	cost = Point.distance(data.getGraph().get(sommet).getPoint(),data.getDestination().getPoint());
+        }
+        else {
+        	cost = Point.distance(data.getGraph().get(sommet).getPoint(),data.getDestination().getPoint())/((float)data.getMaximumSpeed());
+        }
+        return new LabelStar(sommet,false,cout,null,cost);
     }
 
 }
